@@ -96,13 +96,13 @@ const swarm = Swarm(config);
         const seq = connSeq;
         const peerId = info.id.toString("hex");
 
-        console.log(`Connected #${seq} to peer: ${peerId}`);
+        console.log(`\nConnected #${seq} to peer: ${peerId}\n`);
 
         // If we initiated the connection...
         if (info.initiator) {
             try {
                 // use setKeepAlive to ensure the network connection stays with other peers
-                conn.setKeepAlive(true, 600);
+                //conn.setKeepAlive(true, 60000);
             } catch (exception) {
                 console.log("exception", exception);
             }
@@ -112,19 +112,29 @@ const swarm = Swarm(config);
         conn.on("data", (data) => {
             let message = JSON.parse(data);
 
-            console.log("----------- Received Message start -------------");
+            console.log("\n=================================================");
+            console.log("\n             Received Message Start              ");
+            console.log("\n=================================================");
             console.log(
                 "from: " + peerId.toString("hex"),
                 "to: " + peerId.toString(message.to),
                 "my: " + myPeerId.toString("hex"),
                 "type: " + JSON.stringify(message.type)
             );
-            console.log("----------- Received Message end -------------");
+            console.log("\n=================================================");
+            console.log("\n             Received Message End                ");
+            console.log("\n=================================================");
 
             // Handle the different types of message requests.
             switch (message.type) {
                 case MessageType.REQUEST_BLOCK:
-                    console.log("-----------REQUEST_BLOCK-------------");
+                    console.log(
+                        "\n================================================="
+                    );
+                    console.log("\n           REQUEST_BLOCK START           ");
+                    console.log(
+                        "\n================================================="
+                    );
 
                     let requestedIndex = JSON.parse(
                         JSON.stringify(message.data)
@@ -144,11 +154,25 @@ const swarm = Swarm(config);
                         );
                     }
 
-                    console.log("-----------REQUEST_BLOCK-------------");
+                    console.log(
+                        "\n================================================="
+                    );
+                    console.log("\n           REQUEST_BLOCK END             ");
+                    console.log(
+                        "\n================================================="
+                    );
 
                     break;
                 case MessageType.RECEIVE_NEXT_BLOCK:
-                    console.log("-----------RECEIVE_NEXT_BLOCK-------------");
+                    console.log(
+                        "\n================================================="
+                    );
+                    console.log(
+                        "\n             RECEIVE_NEXT_BLOCK START            "
+                    );
+                    console.log(
+                        "\n================================================="
+                    );
 
                     chain.addBlock(JSON.parse(JSON.stringify(message.data)));
 
@@ -164,7 +188,15 @@ const swarm = Swarm(config);
                         index: nextBlockIndex,
                     });
 
-                    console.log("-----------RECEIVE_NEXT_BLOCK-------------");
+                    console.log(
+                        "\n================================================="
+                    );
+                    console.log(
+                        "\n             RECEIVE_NEXT_BLOCK END              "
+                    );
+                    console.log(
+                        "\n================================================="
+                    );
 
                     break;
                 case MessageType.RECEIVE_NEW_BLOCK:
@@ -173,9 +205,15 @@ const swarm = Swarm(config);
                         message.from !== myPeerId.toString("hex")
                     ) {
                         console.log(
-                            "-----------RECEIVE_NEW_BLOCK------------- " +
-                                message.to
+                            "\n================================================="
                         );
+                        console.log(
+                            "\n             RECEIVE_NEW_BLOCK START            "
+                        );
+                        console.log(
+                            "\n================================================="
+                        );
+                        console.log("\nTO: " + message.to + "\n\n");
 
                         chain.addBlock(
                             JSON.parse(JSON.stringify(message.data))
@@ -183,17 +221,28 @@ const swarm = Swarm(config);
 
                         console.log(JSON.stringify(chain.blockchain));
                         console.log(
-                            "-----------RECEIVE_NEW_BLOCK------------- " +
-                                message.to
+                            "\n================================================="
+                        );
+                        console.log(
+                            "\n             RECEIVE_NEW_BLOCK END            "
+                        );
+                        console.log(
+                            "\n================================================="
                         );
                     }
 
                     break;
                 case MessageType.REQUEST_ALL_REGISTER_MINERS:
                     console.log(
-                        "-----------REQUEST_ALL_REGISTER_MINERS------------- " +
-                            message.to
+                        "\n================================================="
                     );
+                    console.log(
+                        "\n             REQUEST_ALL_REGISTER_MINERS START   "
+                    );
+                    console.log(
+                        "\n================================================="
+                    );
+                    console.log("\nTO: " + message.to + "\n\n");
 
                     writeMessageToPeers(
                         MessageType.REGISTER_MINER,
@@ -203,51 +252,76 @@ const swarm = Swarm(config);
                     registeredMiners = JSON.parse(JSON.stringify(message.data));
 
                     console.log(
-                        "-----------REQUEST_ALL_REGISTER_MINERS------------- " +
-                            message.to
+                        "\n================================================="
                     );
+                    console.log(
+                        "\n             REQUEST_ALL_REGISTER_MINERS END   "
+                    );
+                    console.log(
+                        "\n================================================="
+                    );
+
                     break;
                 case MessageType.REGISTER_MINER:
                     console.log(
-                        "-----------REGISTER_MINER------------- " + message.to
+                        "\n================================================="
                     );
+                    console.log("\n         REGISTER_MINER START            ");
+                    console.log(
+                        "\n================================================="
+                    );
+                    console.log("\nTO: " + message.to + "\n\n");
 
                     let miners = JSON.stringify(message.data);
                     registeredMiners = JSON.parse(miners);
 
                     console.log(registeredMiners);
                     console.log(
-                        "-----------REGISTER_MINER------------- " + message.to
+                        "\n================================================="
                     );
-
+                    console.log("\n         REGISTER_MINER END              ");
+                    console.log(
+                        "\n================================================="
+                    );
                     break;
             }
         });
 
         /**
          * Listen to a close event, which will indicate a lost connection with peers, and take action, such as deleting
-         * the peers from the peers ist object.
+         * the peers from the peers list object.
          */
         conn.on("close", () => {
-            console.log(`Connection ${seq} closed, peerId: ${peerId}`);
+            console.log(`\nConnection ${seq} closed, peerId: ${peerId}\n`);
 
             if (peers[peerId].seq === seq) {
                 delete peers[peerId];
-
                 console.log(
-                    "--- registeredMiners Before: " +
-                        JSON.stringify(registeredMiners)
+                    "\n================================================="
+                );
+                console.log("\n             REGISTERED MINERS START     ");
+                console.log(
+                    "\n================================================="
+                );
+                console.log(
+                    "\nBEFORE: " + JSON.stringify(registeredMiners) + "\n"
                 );
 
-                let index = registeredMiners.indexOf(peerId);
+                index = registeredMiners.indexOf(peerId);
 
                 if (index > -1) {
                     registeredMiners.splice(index, 1);
                 }
 
                 console.log(
-                    "--- registeredMiners End: " +
-                        JSON.stringify(registeredMiners)
+                    "\nEND: " + JSON.stringify(registeredMiners) + "\n"
+                );
+                console.log(
+                    "\n================================================="
+                );
+                console.log("\n             REGISTERED MINERS END       ");
+                console.log(
+                    "\n================================================="
                 );
             }
         });
@@ -266,9 +340,13 @@ const swarm = Swarm(config);
 // Send messages to all the connected peers
 writeMessageToPeers = (type, data) => {
     for (let id in peers) {
-        console.log("-------- writeMessageToPeers Start -------- ");
-        console.log("type: " + type + ", to: " + id);
-        console.log("-------- writeMessageToPeers End ----------- ");
+        console.log("\n=================================================");
+        console.log("\n             WRITE MESSAGE TO PEERS START        ");
+        console.log("\n=================================================");
+        console.log("\ntype: " + type + ", to: " + id);
+        console.log("\n=================================================");
+        console.log("\n             WRITE MESSAGE TO PEERS END          ");
+        console.log("\n=================================================");
 
         sendMessage(id, type, data);
     }
@@ -278,9 +356,13 @@ writeMessageToPeers = (type, data) => {
 writeMessageToPeerToId = (toId, type, data) => {
     for (let id in peers) {
         if (id === toId) {
-            console.log("-------- writeMessageToPeerToId Start -------- ");
-            console.log("type: " + type + ", to: " + toId);
-            console.log("-------- writeMessageToPeerToId End ----------- ");
+            console.log("\n=================================================");
+            console.log("\n             WRITE MESSAGE TO PEER ID START      ");
+            console.log("\n=================================================");
+            console.log("\ntype: " + type + ", to: " + toId);
+            console.log("\n=================================================");
+            console.log("\n             WRITE MESSAGE TO PEER ID END        ");
+            console.log("\n=================================================");
 
             sendMessage(id, type, data);
         }
@@ -319,12 +401,16 @@ setTimeout(function () {
 setTimeout(function () {
     registeredMiners.push(myPeerId.toString("hex"));
 
-    console.log("----------Register My Miner --------------");
+    console.log("\n=================================================");
+    console.log("\n             REGISTER MY MINER START             ");
+    console.log("\n=================================================\n");
     console.log(registeredMiners);
 
     writeMessageToPeers(MessageType.REGISTER_MINER, registeredMiners);
 
-    console.log("---------- Register My Miner --------------");
+    console.log("\n=================================================");
+    console.log("\n             REGISTER MY MINER END               ");
+    console.log("\n=================================================\n");
 }, 7000);
 
 const job = new CronJob("30 * * * * *", function () {
@@ -333,23 +419,26 @@ const job = new CronJob("30 * * * * *", function () {
 
     // Requesting next block from the next miner
     if (lastBlockMinedBy) {
-        let newIndex = registeredMiners.indexOf(lastBlockMinedBy);
+        newIndex = registeredMiners.indexOf(lastBlockMinedBy);
         index = newIndex + 1 > registeredMiners.length - 1 ? 0 : newIndex + 1;
     }
 
     lastBlockMinedBy = registeredMiners[index];
 
     console.log(
-        "-- REQUESTING NEW BLOCK FROM: " +
+        "\n-- REQUESTING NEW BLOCK FROM: " +
             registeredMiners[index] +
             ", index: " +
-            index
+            index +
+            "\n"
     );
 
     console.log(JSON.stringify(registeredMiners));
 
     if (registeredMiners[index] === myPeerId.toString("hex")) {
-        console.log("-----------Create Next Block -----------------");
+        console.log("\n=================================================");
+        console.log("\n             CREATE NEXT BLOCK START             ");
+        console.log("\n=================================================\n");
 
         let newBlock = chain.generateNextBlock(null);
 
@@ -360,7 +449,9 @@ const job = new CronJob("30 * * * * *", function () {
         writeMessageToPeers(MessageType.RECEIVE_NEW_BLOCK, newBlock);
 
         console.log(JSON.stringify(chain.blockchain));
-        console.log("-----------Create Next Block -----------------");
+        console.log("\n=================================================");
+        console.log("\n             CREATE NEXT BLOCK END               ");
+        console.log("\n=================================================\n");
     }
 });
 
