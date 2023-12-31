@@ -413,7 +413,7 @@ setTimeout(function () {
     console.log("\n=================================================\n");
 }, 7000);
 
-const job = new CronJob("30 * * * * *", function () {
+const job = new CronJob("10 * * * * *", function () {
     // First block
     let index = 0;
 
