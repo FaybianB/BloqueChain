@@ -420,7 +420,7 @@ const job = new CronJob("30 * * * * *", function () {
     // Requesting next block from the next miner
     if (lastBlockMinedBy) {
         newIndex = registeredMiners.indexOf(lastBlockMinedBy);
-        index = newIndex + 1 > registeredMiners.length - 1 ? 0 : newIndex + 1;
+        index = (newIndex + 1 > registeredMiners.length - 1) ? 0 : newIndex + 1;
     }
 
     lastBlockMinedBy = registeredMiners[index];
@@ -444,10 +444,11 @@ const job = new CronJob("30 * * * * *", function () {
 
         chain.addBlock(newBlock);
 
+        console.log("New Block:\n");
         console.log(JSON.stringify(newBlock));
-
         writeMessageToPeers(MessageType.RECEIVE_NEW_BLOCK, newBlock);
 
+        console.log("\nBlockchain:\n");
         console.log(JSON.stringify(chain.blockchain));
         console.log("\n=================================================");
         console.log("\n             CREATE NEXT BLOCK END               ");
