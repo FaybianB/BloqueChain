@@ -7,7 +7,7 @@ let moment = require("moment");
 let path = require("path");
 let wrap = require("wordwrap").hard(0, 80);
 let colors = require("colors/safe");
-_ = require("lodash");
+let _ = require("lodash");
 
 function stripHandlebarsNewLine(str) {
     return str.replace(/[\s\t\r\n](\{\{[#\/])/g, "$1");

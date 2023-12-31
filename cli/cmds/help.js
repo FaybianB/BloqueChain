@@ -141,7 +141,7 @@ Help.prototype.listCommands_ = function (commands) {
         "\n(*) Flags that can execute an action.\n" +
         "'cli help' lists available commands.\n" +
         "'cli help -a' lists all available subcommands.\n" +
-        "On mac add to '/.bash_profile' >  alias cli='node /[location]/bin/cli.js' \n" +
+        "On mac add to '~/.zshenv' >  alias cli='node /[location]/bin/cli.js' \n" +
         "then use 'cli' alias >cli help";
 
     return content;
