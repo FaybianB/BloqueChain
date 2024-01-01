@@ -63,48 +63,40 @@ REGISTER_MINER: Request to register miner
 ## API Documentation
 
 **_Retrieve All Blocks_**
-
-Endpoint: `/blocks`
-
-Method: `GET`
-
+```
+Endpoint: /blocks
+Method: GET
 Description: Retrieves all blocks in the blockchain.
-
 Response: JSON array of blocks.
+```
+
 
 **_Retrieve a Single Block_**
-
-Endpoint: `/getBlock`
-
-Method: `GET`
-
+```
+Endpoint: /getBlock
+Method: GET
 Query Parameters: - index (integer) - Index of the block to retrieve.
-
 Description: Retrieves a block based on its index.
-
 Response: JSON object of the block.
+```
+
 
 **_Retrieve a Block from LevelDB_**
-
-Endpoint: `/getDBBlock`
-
-Method: `GET`
-
+```
+Endpoint: /getDBBlock
+Method: GET
 Query Parameters: - index (integer) - Index of the block in the LevelDB database.
-
 Description: Retrieves a block from the LevelDB database based on its index.
-
 Response: JSON object of the block from the database.
+```
 
 **_Generate Wallet_**
-
-Endpoint: `/getWallet`
-
-Method: `GET`
-
+```
+Endpoint: /getWallet
+Method: GET
 Description: Generates a public-private key pair for a new wallet.
-
 Response: JSON object with wallet details (public and private keys).
+```
 
 ## License
 
