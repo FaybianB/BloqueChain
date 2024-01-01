@@ -1,10 +1,10 @@
 # BloqueChain
 
+BloqueChain is a custom blockchain network built using Node.js. It leverages a peer-to-peer (P2P) architecture to maintain a decentralized network of nodes. This project uses LevelDB, a name-value database, for persistently storing blocks. It also features a comprehensive API for block and wallet information retrieval, alongside a command-line interface for interaction with the API.
+
 <p align="center">
   <img src="media/BloqueChain.png" alt="BloqueChain">
 </p>
-
-BloqueChain is a custom blockchain network built using Node.js. It leverages a peer-to-peer (P2P) architecture to maintain a decentralized network of nodes. This project uses LevelDB, a name-value database, for persistently storing blocks. It also features a comprehensive API for block and wallet information retrieval, alongside a command-line interface for interaction with the API.
 
 ## Getting Started
 
