@@ -44,7 +44,7 @@ Wallet.prototype.runCmd = function (cmd) {
             return;
         }
 
-        logger.log(`stdout: ${stdout}`);
+        logger.log("\n" + `${JSON.stringify(JSON.parse(stdout), undefined, 4)}`);
     });
 };
 

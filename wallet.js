@@ -1,13 +1,16 @@
 const path = require("path");
 const EC = require("elliptic").ec;
 const fs = require("fs");
+const keccak256 = require("keccak256");
 const ec = new EC("secp256k1");
+const eip55 = require("eip55");
 const privateKeyDir = path.join(__dirname, "wallet");
-const privateKeyFile = path.join(privateKeyDir, "private_key");
+const privateKeyFileBase = path.join(privateKeyDir, "private_key");
 
 // Generates the actual public-private key
-exports.initWallet = () => {
+exports.initWallet = (peerId) => {
     let privateKey;
+    privateKeyFile = privateKeyFileBase + "_" + peerId;
 
     // If the directory doesn't exist, create it
     if (!fs.existsSync(privateKeyDir)) {
@@ -26,8 +29,17 @@ exports.initWallet = () => {
 
     const key = ec.keyFromPrivate(privateKey, "hex");
     const publicKey = key.getPublic().encode("hex");
+    // Take hash of public key to derive the address.
+    // Similar to Ethereum, uses last 20 bytes of the hash as the address.
+    // Prefixed with "0x" to indicate it's a hexadecimal number.
+    // Creates a mixed-case checksum address according to Ethereum's EIP-55 specification.
+    const address = eip55.encode("0x" + keccak256(publicKey).toString("hex").slice(-40));
 
-    return { privateKeyLocation: privateKeyFile, publicKey: publicKey };
+    return {
+        privateKeyLocation: privateKeyFile,
+        publicKey: publicKey,
+        address: address,
+    };
 };
 
 const generatePrivateKey = () => {
@@ -36,9 +48,3 @@ const generatePrivateKey = () => {
 
     return privateKey.toString(16);
 };
-
-// To see the code working, script will create the public and private keys
-let wallet = this;
-let retVal = wallet.initWallet();
-
-console.log(JSON.stringify(retVal));

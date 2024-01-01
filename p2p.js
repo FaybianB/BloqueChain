@@ -27,7 +27,11 @@ let MessageType = {
 
 const myPeerId = crypto.randomBytes(32);
 
-console.log("myPeerId: " + myPeerId.toString("hex"));
+console.log("\nmyPeerId: " + myPeerId.toString("hex"));
+
+const walletInfo = wallet.initWallet(myPeerId.toString("hex"));
+
+console.log("\n" + JSON.stringify(walletInfo, undefined, 4));
 
 // Create a database
 chain.createDb(myPeerId.toString("hex"));
@@ -62,7 +66,7 @@ let initHttpServer = (port) => {
 
     // getWallet service will be utilizing the wallet.js file to generate a public-private key pair
     app.get("/getWallet", (req, res) => {
-        res.send(wallet.initWallet());
+        res.send(wallet.initWallet(myPeerId.toString("hex")));
     });
 
     app.listen(http_port, () =>
@@ -86,7 +90,7 @@ const swarm = Swarm(config);
 
     swarm.listen(port);
 
-    console.log("Listening port: " + port);
+    console.log("\nListening port: " + port);
 
     swarm.join(channel);
 
