@@ -224,7 +224,7 @@ const swarm = Swarm(config);
                             "\n================================================="
                         );
                         console.log(
-                            "\n             RECEIVE_NEW_BLOCK END            "
+                            "\n             RECEIVE_NEW_BLOCK END               "
                         );
                         console.log(
                             "\n================================================="
