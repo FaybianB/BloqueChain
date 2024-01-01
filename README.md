@@ -98,6 +98,10 @@ Description: Generates a public-private key pair for a new wallet.
 Response: JSON object with wallet details (public and private keys).
 ```
 
+## Command Line Interface Documentation
+
+See [here](cli/README.md).
+
 ## License
 
 This project is licensed under the MIT License.
