@@ -7,6 +7,7 @@ const defaults = require("dat-swarm-defaults");
 const getPort = require("get-port");
 const chain = require("./chain");
 const CronJob = require("cron").CronJob;
+const Transaction = require("./transaction.js").Transaction;
 const express = require("express");
 const bodyParser = require("body-parser");
 const wallet = require("./wallet");
@@ -62,6 +63,30 @@ let initHttpServer = (port) => {
         let blockIndex = req.query.index;
 
         chain.getDbBlock(blockIndex, res);
+    });
+
+    // blocks service to retrieve all blocks
+    app.get("/transactions", (req, res) =>
+        res.send(JSON.stringify(chain.blockchain, undefined, 4))
+    );
+
+    // getBlock service will be retrieving one block based on an index
+    app.get("/getTransaction", (req, res) => {
+        let blockIndex = req.query.index;
+
+        res.send(chain.blockchain[blockIndex]);
+    });
+
+    // getDBBlock service will be retrieving a LevelDB database entry based on an index
+    app.get("/getDBTransaction", (req, res) => {
+        let blockIndex = req.query.index;
+
+        chain.getDbBlock(blockIndex, res);
+    });
+
+    // getBlock service will be retrieving one block based on an index
+    app.get("/generateTransaction", (req, res) => {
+        wallet.generateTransaction(req, res);
     });
 
     // getWallet service will be utilizing the wallet.js file to generate a public-private key pair

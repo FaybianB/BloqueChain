@@ -53,7 +53,7 @@ let addBlock = (newBlock) => {
 
 // Store the new block
 let storeBlock = (newBlock) => {
-    db.put(newBlock.index, JSON.stringify(newBlock), function (err) {
+    db.put("block_" + newBlock.index, JSON.stringify(newBlock), function (err) {
         if (err) {
             console.error("\nError storing block:", err);
         } else {
@@ -63,7 +63,7 @@ let storeBlock = (newBlock) => {
 };
 
 let getDbBlock = (index, res) => {
-    db.get(index, function (err, value) {
+    db.get("block_" + index, function (err, value) {
         if (err) {
             res.send(JSON.stringify(err));
         } else {
@@ -105,6 +105,50 @@ const generateNextBlock = (txns) => {
     return newBlock;
 };
 
+let transactions = [];
+
+let addTransaction = (newTransaction) => {
+    transactions.push(newTransaction);
+
+    // When a new block is generated, store the block in the LevelDB database
+    storeTransaction(newTransaction);
+};
+
+// Store the new transaction
+let storeTransaction = (newTransaction) => {
+    db.put(
+        "transaction_" + newTransaction.index,
+        JSON.stringify(newTransaction),
+        function (err) {
+            if (err) {
+                console.error("\nError storing block:", err);
+            } else {
+                console.log(
+                    "\n--- Inserting block index: " + newTransaction.index
+                );
+            }
+        }
+    );
+};
+
+let getDBTransaction = (index, res) => {
+    db.get("transaction_" + index, function (err, value) {
+        if (err) {
+            res.send(JSON.stringify(err));
+        } else {
+            res.send(value);
+        }
+    });
+};
+
+let getTransaction = (index) => {
+    if (transactions.length - 1 >= index) {
+        return transactions[index];
+    } else {
+        return null;
+    }
+};
+
 if (typeof exports != "undefined") {
     exports.addBlock = addBlock;
     exports.getBlock = getBlock;
@@ -113,4 +157,9 @@ if (typeof exports != "undefined") {
     exports.generateNextBlock = generateNextBlock;
     exports.createDb = createDb;
     exports.getDbBlock = getDbBlock;
+    exports.transactions = transactions;
+    exports.addTransaction = addTransaction;
+    exports.getDBTransaction = getDBTransaction;
+    exports.getTransaction = getTransaction;
+
 }
