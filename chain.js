@@ -168,15 +168,16 @@ let getVerifiedTransactions = (blockHash, blockNumber) => {
 
 // Store the new transaction
 let storeTransaction = (newTransaction) => {
-    chain.db.put(
+    db.put(
         "transaction_" + newTransaction.index,
         JSON.stringify(newTransaction),
         function (err) {
             if (err) {
-                console.error("\nError storing block:", err);
+                console.error("\nError storing transaction:", err);
             } else {
                 console.log(
-                    "\n--- Inserting block index: " + newTransaction.index
+                    "\n--- Inserting transaction hash: " +
+                        newTransaction.hash
                 );
             }
         }

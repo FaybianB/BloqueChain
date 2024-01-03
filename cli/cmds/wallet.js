@@ -9,12 +9,12 @@ function Wallet(options) {
 Wallet.DETAILS = {
     alias: "w",
     description: "wallet",
-    commands: ["create"],
+    commands: ["create, transact"],
     options: {
         create: Boolean,
     },
     shorthands: {
-        c: ["--create"],
+        c: ["--create", "--transact"],
     },
     payload: function (payload, options) {
         options.start = true;
@@ -28,6 +28,13 @@ Wallet.prototype.run = function () {
     if (options.create) {
         instance.runCmd(
             "curl http://localhost:" + options.argv.original[2] + "/getWallet"
+        );
+    }
+    if (options.transact) {
+        instance.runCmd(
+            "curl http://localhost:" +
+                options.argv.original[2] +
+                "/generateTransaction"
         );
     }
 };
@@ -44,7 +51,9 @@ Wallet.prototype.runCmd = function (cmd) {
             return;
         }
 
-        logger.log("\n" + `${JSON.stringify(JSON.parse(stdout), undefined, 4)}`);
+        logger.log(
+            "\n" + `${JSON.stringify(JSON.parse(stdout), undefined, 4)}`
+        );
     });
 };
 
