@@ -6,6 +6,7 @@ const defaults = require("dat-swarm-defaults");
 // Retrieves available TCP ports
 const getPort = require("get-port");
 const chain = require("./chain");
+const mempool = require("./mempool");
 const CronJob = require("cron").CronJob;
 const Transaction = require("./transaction.js").Transaction;
 const express = require("express");
@@ -66,8 +67,8 @@ let initHttpServer = (port) => {
     });
 
     // blocks service to retrieve all blocks
-    app.get("/transactions", (req, res) =>
-        res.send(JSON.stringify(chain.blockchain, undefined, 4))
+    app.get("/mempool", (req, res) =>
+        res.send(JSON.stringify(mempool.transactions, undefined, 4))
     );
 
     // getBlock service will be retrieving one block based on an index
@@ -490,7 +491,7 @@ const job = new CronJob("10 * * * * *", function () {
         console.log("\n             CREATE NEXT BLOCK START             ");
         console.log("\n=================================================\n");
 
-        let newBlock = chain.generateNextBlock(null);
+        let newBlock = chain.generateNextBlock();
 
         chain.addBlock(newBlock);
 

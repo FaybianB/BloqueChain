@@ -1,6 +1,5 @@
 exports.BlockHeader = class BlockHeader {
-    constructor(version, previousBlockHeader, merkleRoot, time, nBits, nounce) {
-        // Version - at the time of writing there are 4 block versions.
+    constructor(version, previousBlockHeader, merkleRoot, time) {
         this.version = version;
         // Previous block header hash - A SHA256(SHA256()) hash of previous block’s header.
         // Ensures that previous block cannot be changed.

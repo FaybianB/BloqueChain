@@ -2,9 +2,13 @@ const path = require("path");
 const Block = require("./block.js").Block;
 const BlockHeader = require("./block.js").BlockHeader;
 const moment = require("moment");
-const CryptoJS = require("crypto-js");
+const keccak256 = require("keccak256");
 const { Level } = require("level");
 const fs = require("fs");
+const EC = require("elliptic").ec;
+const ec = new EC("secp256k1");
+const mempool = require("./mempool");
+const Transaction = require("./transaction.js").Transaction;
 let db;
 
 let createDb = async (peerId) => {
@@ -82,12 +86,12 @@ let getBlock = (index) => {
 
 const blockchain = [getGenesisBlock()];
 
-const generateNextBlock = (txns) => {
+const generateNextBlock = () => {
     const prevBlock = getLatestBlock();
     const prevMerkleRoot = prevBlock.blockHeader.merkleRoot;
     nextIndex = prevBlock.index + 1;
     nextTime = moment().unix();
-    nextMerkleRoot = CryptoJS.SHA256(1, prevMerkleRoot, nextTime).toString();
+    nextMerkleRoot = "0x" + keccak256(prevMerkleRoot + nextTime + nextIndex).toString("hex");
 
     const blockHeader = new BlockHeader(
         1,
@@ -96,6 +100,7 @@ const generateNextBlock = (txns) => {
         nextTime
     );
 
+    const txns = getVerifiedTransactions(nextMerkleRoot, nextIndex);
     const newBlock = new Block(blockHeader, nextIndex, txns);
 
     blockchain.push(newBlock);
@@ -105,18 +110,65 @@ const generateNextBlock = (txns) => {
     return newBlock;
 };
 
-let transactions = [];
+let getVerifiedTransactions = (blockHash, blockNumber) => {
+    let verifiedTransactions = [];
+    let unverifiedTransactions = [];
 
-let addTransaction = (newTransaction) => {
-    transactions.push(newTransaction);
+    for (let i = 0; i < mempool.transactions.length; i++) {
+        let transaction = mempool.transactions[i];
+        let signature = transaction.signature;
 
-    // When a new block is generated, store the block in the LevelDB database
-    storeTransaction(newTransaction);
+        transaction = new Transaction(
+            transaction.hash,
+            transaction.nonce,
+            transaction.blockHash,
+            transaction.blockNumber,
+            transaction.transactionIndex,
+            transaction.from,
+            transaction.to,
+            transaction.value,
+            transaction.gas,
+            transaction.gasPrice,
+            transaction.input
+        );
+
+        let msgHash = Object.values(transaction);
+        let publicKey;
+        let key;
+        let verified = false;
+
+        // Verify signature of transaction
+        try {
+            publicKey = ec
+                .recoverPubKey(msgHash, signature, signature.recoveryParam)
+                .encode("hex");
+            key = ec.keyFromPublic(publicKey, "hex");
+            verified = key.verify(msgHash, signature);
+        } catch (exception) {
+            console.log("ERROR: Failed to recover public key");
+        }
+
+        if (verified) {
+            transaction.signature = signature;
+            transaction.blockHash = blockHash;
+            transaction.blockNumber = blockNumber;
+
+            verifiedTransactions.push(transaction);
+
+            storeTransaction(transaction);
+        } else {
+            unverifiedTransactions.push(transaction);
+        }
+    }
+
+    mempool.updateMempool(unverifiedTransactions);
+
+    return verifiedTransactions;
 };
 
 // Store the new transaction
 let storeTransaction = (newTransaction) => {
-    db.put(
+    chain.db.put(
         "transaction_" + newTransaction.index,
         JSON.stringify(newTransaction),
         function (err) {
@@ -131,24 +183,6 @@ let storeTransaction = (newTransaction) => {
     );
 };
 
-let getDBTransaction = (index, res) => {
-    db.get("transaction_" + index, function (err, value) {
-        if (err) {
-            res.send(JSON.stringify(err));
-        } else {
-            res.send(value);
-        }
-    });
-};
-
-let getTransaction = (index) => {
-    if (transactions.length - 1 >= index) {
-        return transactions[index];
-    } else {
-        return null;
-    }
-};
-
 if (typeof exports != "undefined") {
     exports.addBlock = addBlock;
     exports.getBlock = getBlock;
@@ -157,9 +191,5 @@ if (typeof exports != "undefined") {
     exports.generateNextBlock = generateNextBlock;
     exports.createDb = createDb;
     exports.getDbBlock = getDbBlock;
-    exports.transactions = transactions;
-    exports.addTransaction = addTransaction;
-    exports.getDBTransaction = getDBTransaction;
-    exports.getTransaction = getTransaction;
-
+    exports.db = db;
 }

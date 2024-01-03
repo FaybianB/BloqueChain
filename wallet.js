@@ -4,8 +4,8 @@ const fs = require("fs");
 const keccak256 = require("keccak256");
 const ec = new EC("secp256k1");
 const eip55 = require("eip55");
-const chain = require("./chain");
 const crypto = require("crypto");
+const mempool = require("./mempool");
 const Transaction = require("./transaction.js").Transaction;
 const privateKeyDir = path.join(__dirname, "wallet");
 const privateKeyFileBase = path.join(privateKeyDir, "private_key");
@@ -59,11 +59,13 @@ const generatePrivateKey = () => {
 
 // Creates and signs a transaction
 exports.generateTransaction = (req, res) => {
-    const transactionIndex = chain.transactions.length + 1;
+    const transactionIndex = mempool.transactions.length + 1;
 
     transaction = new Transaction(
         "0x" + keccak256(transactionIndex).toString("hex"),
         nonce++,
+        null,
+        null,
         transactionIndex,
         address,
         req.query.value ?? "0x" + crypto.randomBytes(20).toString("hex"),
@@ -73,34 +75,10 @@ exports.generateTransaction = (req, res) => {
         "0x" + crypto.randomBytes(32).toString("hex")
     );
 
-
     const signature = key.sign(Object.values(transaction));
     transaction.signature = signature;
 
-    chain.addTransaction(transaction);
+    mempool.addTransaction(transaction);
 
     res.send(transaction);
-};
-
-const generateNextBlock = (txns) => {
-    const prevBlock = getLatestBlock();
-    const prevMerkleRoot = prevBlock.blockHeader.merkleRoot;
-    nextIndex = prevBlock.index + 1;
-    nextTime = moment().unix();
-    nextMerkleRoot = CryptoJS.SHA256(1, prevMerkleRoot, nextTime).toString();
-
-    const blockHeader = new BlockHeader(
-        1,
-        prevMerkleRoot,
-        nextMerkleRoot,
-        nextTime
-    );
-
-    const newBlock = new Block(blockHeader, nextIndex, txns);
-
-    blockchain.push(newBlock);
-
-    storeBlock(newBlock);
-
-    return newBlock;
 };

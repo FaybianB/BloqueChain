@@ -2,6 +2,8 @@ exports.Transaction = class Transaction {
     constructor(
         hash,
         nonce,
+        blockHash,
+        blockNumber,
         transactionIndex,
         from,
         to,
@@ -15,8 +17,10 @@ exports.Transaction = class Transaction {
         this.hash = hash;
         // A counter used to ensure each transaction can only be processed once.
         this.nonce = nonce;
-        //blockHash: The hash of the block in which this transaction is recorded.
-        //blockNumber: The number of the block in which this transaction is recorded.
+        // The hash of the block in which this transaction is recorded.
+        this.blockHash = blockHash;
+        // The number of the block in which this transaction is recorded.
+        this.blockNumber = blockNumber;
         // The index position of the transaction in the block.
         this.transactionIndex = transactionIndex;
         // The address of the sender.
