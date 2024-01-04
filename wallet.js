@@ -69,9 +69,9 @@ exports.generateTransaction = (req, res) => {
         transactionIndex,
         address,
         req.query.value ?? "0x" + crypto.randomBytes(20).toString("hex"),
-        req.query.value ?? Math.random(),
-        Math.random(),
-        Math.random(),
+        req.query.value ?? Math.floor(Math.random() * 1000000000000000000000),
+        Math.floor(Math.random() * 1000000000000000000000),
+        Math.floor(Math.random() * 1000000000000000000000),
         "0x" + crypto.randomBytes(32).toString("hex")
     );
 

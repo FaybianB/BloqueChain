@@ -169,7 +169,7 @@ let getVerifiedTransactions = (blockHash, blockNumber) => {
 // Store the new transaction
 let storeTransaction = (newTransaction) => {
     db.put(
-        "transaction_" + newTransaction.index,
+        "transaction_" + newTransaction.hash,
         JSON.stringify(newTransaction),
         function (err) {
             if (err) {
@@ -184,6 +184,16 @@ let storeTransaction = (newTransaction) => {
     );
 };
 
+let getDbTransaction = (hash, res) => {
+    db.get("transaction_" + hash, function (err, value) {
+        if (err) {
+            res.send(JSON.stringify(err));
+        } else {
+            res.send(value);
+        }
+    });
+};
+
 if (typeof exports != "undefined") {
     exports.addBlock = addBlock;
     exports.getBlock = getBlock;
@@ -192,5 +202,6 @@ if (typeof exports != "undefined") {
     exports.generateNextBlock = generateNextBlock;
     exports.createDb = createDb;
     exports.getDbBlock = getDbBlock;
+    exports.getDbTransaction = getDbTransaction;
     exports.db = db;
 }

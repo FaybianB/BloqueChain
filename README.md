@@ -22,6 +22,8 @@ To set up and run BloqueChain, follow these steps:
 **Wallet Creation:** Implements a system for creating private-public key wallets.
 **API:** Offers an API for data retrieval and interaction with the blockchain.
 **CLI:** Provides a command-line interface for easy interaction with the blockchain network.
+**Transaction Creation:** Supports creating transactions via the API and command line.
+**Transaction Handling:** Transactions are verified by miners and added to the next block.
 
 ## Block Structure
 
@@ -38,15 +40,40 @@ Example:
         "merkleRoot":"<hash>",
         // Unix epoch time of block creation.
         "time":<Unix timestamp>
-        // 32-bit number used in mining to meet the target difficulty.
-        "nounce": <number>,
-        // Current target, inversely proportional to the difficulty.
-        "nBits": null
     },
     // Identifies the block's position in the chain, with the GenesisBlock at index 0.
     "index":<number>,
     // Contains the transaction data within the block.
-    "txns":null
+    "txns":[{
+        // Unique identifier of the transaction.
+        "hash": "<hash>",
+        // A counter used to ensure each transaction can only be processed once.
+        "nonce": <number>,
+        // The hash of the block in which this transaction is recorded.
+        "blockHash": "<hash>",
+        // The number of the block in which this transaction is recorded.
+        "blockNumber": <number>,
+        // The index position of the transaction in the block.
+        "transactionIndex": <number>,
+        // The address of the sender.
+        "from": "<hash>",
+        // The address of the receiver.
+        "to": "<hash>",
+        // The amount being transferred
+        "value": <number>,
+        // The maximum amount of gas the sender is willing to use in the transaction.
+        "gas": <number>,
+        // The price the sender is willing to pay per unit of gas, in wei.
+        "gasPrice": <number>,
+        // Data sent along with the transaction, used for contract interaction.
+        "input": "<hash>",
+        // The digital signature of the sender
+        "signature": {
+            "r": "<hash>",
+            "s": "<hash>",
+            "recoveryParam": <number>
+        }
+    }]
 }
 ```
 
@@ -67,6 +94,7 @@ REGISTER_MINER: Request to register miner
 ## API Documentation
 
 **_Retrieve All Blocks_**
+
 ```
 Endpoint: /blocks
 Method: GET
@@ -74,8 +102,8 @@ Description: Retrieves all blocks in the blockchain.
 Response: JSON array of blocks.
 ```
 
-
 **_Retrieve a Single Block_**
+
 ```
 Endpoint: /getBlock
 Method: GET
@@ -84,8 +112,8 @@ Description: Retrieves a block based on its index.
 Response: JSON object of the block.
 ```
 
-
 **_Retrieve a Block from LevelDB_**
+
 ```
 Endpoint: /getDBBlock
 Method: GET
@@ -94,7 +122,27 @@ Description: Retrieves a block from the LevelDB database based on its index.
 Response: JSON object of the block from the database.
 ```
 
+**_Retreive Mempool_**
+
+```
+Endpoint: /mempool
+Method: GET
+Description: Retrieves all pending transactions in the mempool.
+Response: JSON array of transactions.
+```
+
+**_Retrieve a Transaction from LevelDB_**
+
+```
+Endpoint: /getDBTransaction
+Method: GET
+Query Parameters: - hash - Hash of the transaction in the LevelDB database.
+Description: Retrieves a transaction from the LevelDB database based on its hash.
+Response: JSON object of the transaction from the database.
+```
+
 **_Generate Wallet_**
+
 ```
 Endpoint: /getWallet
 Method: GET

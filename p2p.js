@@ -66,16 +66,16 @@ let initHttpServer = (port) => {
         chain.getDbBlock(blockIndex, res);
     });
 
-    // blocks service to retrieve all blocks
+    // blocks service to retrieve all pending transactions in the mempool
     app.get("/mempool", (req, res) =>
         res.send(JSON.stringify(mempool.transactions, undefined, 4))
     );
 
-    // getBlock service will be retrieving one block based on an index
+    // getBlock service will be retrieving one transaction based on a hash
     app.get("/getTransaction", (req, res) => {
-        let blockIndex = req.query.index;
+        let hash = req.query.hash;
 
-        res.send(chain.blockchain[blockIndex]);
+        chain.getDbTransaction(hash, res);
     });
 
     // getDBBlock service will be retrieving a LevelDB database entry based on an index
