@@ -15,15 +15,15 @@ To set up and run BloqueChain, follow these steps:
 
 ## Features
 
-**P2P Network:** Establishes a basic peer-to-peer network for node communication.
-**Block Handling:** Supports sending and receiving blocks between nodes.
-**Miner Registration:** Allows for the registration of miners and creation of new blocks.
-**LevelDB Integration:** Utilizes LevelDB for storing blocks in a name-value pair database.
-**Wallet Creation:** Implements a system for creating private-public key wallets.
-**API:** Offers an API for data retrieval and interaction with the blockchain.
-**CLI:** Provides a command-line interface for easy interaction with the blockchain network.
-**Transaction Creation:** Supports creating transactions via the API and command line.
-**Transaction Handling:** Transactions are verified by miners and added to the next block.
+-   **P2P Network:** Establishes a basic peer-to-peer network for node communication.
+-   **Block Handling:** Supports sending and receiving blocks between nodes.
+-   **Miner Registration:** Allows for the registration of miners and creation of new blocks.
+-   **LevelDB Integration:** Utilizes LevelDB for storing blocks in a name-value pair database.
+-   **Wallet Creation:** Implements a system for creating private-public key wallets.
+-   **API:** Offers an API for data retrieval and interaction with the blockchain.
+-   **CLI:** Provides a command-line interface for easy interaction with the blockchain network.
+-   **Transaction Creation:** Supports creating transactions via the API and command line.
+-   **Transaction Handling:** Transactions are verified by miners and added to the next block.
 
 ## Block Structure
 
